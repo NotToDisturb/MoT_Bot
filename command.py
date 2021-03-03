@@ -1,4 +1,5 @@
 import os
+import g_sheets
 
 from dotenv import load_dotenv
 
@@ -27,7 +28,12 @@ class Command:
         pass
 
     async def generate_csv(self):
-        pass
+        if str(self.message.author) == str(self.discord_client.user) or str(self.message.author) == str(DISCORD_TESTER):
+            spreadsheet = g_sheets.open_spreadsheet(SHEET_ID)
+            g_sheets.generate_spreadsheet_csv(spreadsheet)
+            await self.message.channel.send("CSV files have been rebuilt")
+        else:
+            await self.message.channel.send("Not enough permission to rebuild CSV files")
 
     async def mon(self):
         pass
