@@ -1,23 +1,18 @@
 import csv
-import os
 
 import gspread
-from dotenv import load_dotenv
 from oauth2client.service_account import ServiceAccountCredentials
 
-
-load_dotenv()
-SHEETS_ID = os.getenv("SHEETS_ID")
 
 scope = ["https://www.googleapis.com/auth/spreadsheets",
          "https://www.googleapis.com/auth/drive"]
 
 
-def open_spreadsheet():
+def open_spreadsheet(sheet_id):
     creds = ServiceAccountCredentials.from_json_keyfile_name("client_secret.json", scope)
     auth = gspread.authorize(creds)
 
-    return auth.open_by_key(SHEETS_ID)
+    return auth.open_by_key(sheet_id)
 
 
 def generate_spreadsheet_csv(spreadsheet):
