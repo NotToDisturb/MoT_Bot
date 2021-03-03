@@ -2,3 +2,5 @@
 /venv/
 /client_secret.json
 /.env
+/pokes.csv
+/sources.csv
