@@ -1,10 +1,10 @@
 import os
 
-from commands.info import info_command
-from commands.help import help_command
-from commands.generate_csv import generate_csv_command
-from commands.poke import poke_command
-from commands.none import none_command
+from command_handlers.info import info_command
+from command_handlers.help import help_command
+from command_handlers.generate_csv import generate_csv_command
+from command_handlers.poke import poke_command
+from command_handlers.none import none_command
 
 from dotenv import load_dotenv
 

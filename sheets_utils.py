@@ -32,12 +32,12 @@ def get_index_in_column(file_path, column_name, element):
         return -1
 
 
-def get_element_in_column(file_path, column_name, index):
+def get_line_at_row(file_path, index):
     with open(file_path, "rt") as csv_file:
         reader = csv.DictReader(csv_file, delimiter=',')
         for csv_index, line in enumerate(reader):
             if csv_index == index:
-                return line[column_name]
+                return line
         return None
 
 

@@ -1,6 +1,6 @@
 from reaction_handlers.wastebasket import wastebasket_reaction
-from reaction_handlers.back import back_reaction
-from reaction_handlers.forward import forward_reaction
+from reaction_handlers.directional import back_reaction
+from reaction_handlers.directional import forward_reaction
 
 
 async def is_reaction_valid(discord_client, reaction, user):
