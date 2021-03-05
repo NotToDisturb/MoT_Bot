@@ -60,3 +60,9 @@ def compare_item_with_case(element, content, ignore_case):
         element = element.lower()
         content = content.lower()
     return content == element
+
+
+def get_num_of_rows(file_path):
+    with open(file_path, "rt") as csv_file:
+        reader = csv.DictReader(csv_file, delimiter=',')
+        return len(list(reader)) - 1

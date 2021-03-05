@@ -13,7 +13,7 @@ SHEET_ID = os.getenv("SHEET_ID")
 DISCORD_TESTER = os.getenv("DISCORD_TESTER")
 
 
-async def generate_csv(discord_client, message, command, args):
+async def generate_csv_command(discord_client, message, command, args):
     if str(message.author) == str(discord_client.user) or str(message.author) == str(DISCORD_TESTER):
         spreadsheet = sheets_utils.open_spreadsheet(SHEET_ID)
         sheets_utils.generate_spreadsheet_csv(spreadsheet)

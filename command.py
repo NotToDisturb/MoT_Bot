@@ -1,8 +1,10 @@
 import os
 
-from commands.generate_csv import generate_csv
-from commands.poke import poke
-from commands.none import none
+from commands.info import info_command
+from commands.help import help_command
+from commands.generate_csv import generate_csv_command
+from commands.poke import poke_command
+from commands.none import none_command
 
 from dotenv import load_dotenv
 
@@ -25,8 +27,10 @@ class Command:
     async def execute(self):
         func = cmd_to_func.get(self.command, None)
         await (func(self.discord_client, self.message, self.command, self.args) if func is not None
-               else none(self.discord_client, self.message, self.command, self.args))
+               else none_command(self.discord_client, self.message, self.command, self.args))
 
 
-cmd_to_func = {"csv": generate_csv,
-               "poke": poke}
+cmd_to_func = {"help": help_command,
+               "info": info_command,
+               "csv": generate_csv_command,
+               "poke": poke_command}
