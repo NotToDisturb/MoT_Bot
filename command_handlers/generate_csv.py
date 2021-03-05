@@ -2,7 +2,7 @@ import os
 
 import discord
 
-import sheets_utils
+import file_utils
 
 from dotenv import load_dotenv
 
@@ -15,8 +15,8 @@ DISCORD_TESTER = os.getenv("DISCORD_TESTER")
 
 async def generate_csv_command(discord_client, message, command, args):
     if str(message.author) == str(discord_client.user) or str(message.author) == str(DISCORD_TESTER):
-        spreadsheet = sheets_utils.open_spreadsheet(SHEET_ID)
-        sheets_utils.generate_spreadsheet_csv(spreadsheet)
+        spreadsheet = file_utils.open_spreadsheet(SHEET_ID)
+        file_utils.generate_spreadsheet_csv(spreadsheet)
 
         embed_message = discord.Embed(title="Admin",
                                       description="CSV files have been rebuilt.",

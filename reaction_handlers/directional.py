@@ -2,7 +2,7 @@ import os
 
 from dotenv import load_dotenv
 
-import sheets_utils
+import file_utils
 from command_handlers import poke
 
 load_dotenv()
@@ -12,8 +12,8 @@ CSV_SOURCES = os.getenv("CSV_SOURCES")
 
 async def handle_directional_poke(reaction, user, direction):
     num = reaction.message.embeds[0].title.replace("Nº", "").split(" - ")[0]
-    index = sheets_utils.get_index_in_column(CSV_POKES, "Num", num) + get_direction_offset(direction)
-    line = sheets_utils.get_line_at_row(CSV_POKES, index)
+    index = file_utils.get_index_in_column(CSV_POKES, "Num", num) + get_direction_offset(direction)
+    line = file_utils.get_line_at_row(CSV_POKES, index)
 
     embed_message = poke.poke_do_embed(line)
     await reaction.message.edit(embed=embed_message)

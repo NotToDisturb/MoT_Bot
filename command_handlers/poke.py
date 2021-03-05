@@ -3,7 +3,7 @@ import os
 import discord
 from dotenv import load_dotenv
 
-import sheets_utils
+import file_utils
 
 load_dotenv()
 CSV_POKES = os.getenv("CSV_POKES")
@@ -11,7 +11,7 @@ CSV_SOURCES = os.getenv("CSV_SOURCES")
 
 
 async def poke_command(discord_client, message, command, args):
-    line, index = sheets_utils.find_item_in_columns_and_get_row(CSV_POKES, "Name", args)
+    line, index = file_utils.find_item_in_columns_and_get_row(CSV_POKES, "Name", args)
     if index > -1:
         embed_message = poke_do_embed(line)
 
@@ -48,7 +48,7 @@ def poke_do_sources(line):
     if len(sources_raw) > 0:
         sources = sources_raw.split("|")
         for source_index in range(0, len(sources)):
-            source_line = sheets_utils.get_line_at_row(CSV_SOURCES, int(sources[source_index]))
+            source_line = file_utils.get_line_at_row(CSV_SOURCES, int(sources[source_index]))
             source_name = source_line["Name"]
             source_value = source_line["Link"]
             sources_value += "\n[" + source_name + "](" + source_value + ")"
@@ -72,6 +72,6 @@ def poke_do_sources(line):
 async def poke_do_reactions(message, index):
     if index > 0:
         await message.add_reaction("◀️")
-    if index < sheets_utils.get_num_of_rows(CSV_POKES):
+    if index < file_utils.get_num_of_rows(CSV_POKES):
         await message.add_reaction("▶️")
     await message.add_reaction("🗑️")
