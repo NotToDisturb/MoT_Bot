@@ -39,3 +39,24 @@ def get_element_in_column(file_path, column_name, index):
             if csv_index == index:
                 return line[column_name]
         return None
+
+
+def find_item_in_columns_and_get_row(file_path, column_names, element, ignore_case=True):
+    with open(file_path, "rt") as csv_file:
+        reader = csv.DictReader(csv_file, delimiter=',')
+        for index, line in enumerate(reader):
+            if isinstance(column_names, str):
+                if compare_item_with_case(element, line[column_names], ignore_case):
+                    return line, index
+            else:
+                for column_name in column_names:
+                    if compare_item_with_case(element, line[column_name], ignore_case):
+                        return line, index
+        return None, -1
+
+
+def compare_item_with_case(element, content, ignore_case):
+    if ignore_case:
+        element = element.lower()
+        content = content.lower()
+    return content == element
