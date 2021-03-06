@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 DISCORD_PREFIX = os.getenv("DISCORD_PREFIX")
+DISTURBO_ICON = os.getenv("DISTURBO_ICON")
 
 
 async def help_command(discord_client, message, command, args):
@@ -20,8 +21,7 @@ async def help_command(discord_client, message, command, args):
                                                                       "if you want information on a specific Pokémon",
                             inline=False)
     embed_message.set_footer(text="Built by Disturbo",
-                             icon_url="https://avatars.githubusercontent.com/u/16744563?s=460&u"
-                                      "=e570ce6dbdb0c6ff2f3b5e4e116090b7b4b1a9e6")
+                             icon_url=DISTURBO_ICON)
     await message.channel.send(embed=embed_message)
 
 
