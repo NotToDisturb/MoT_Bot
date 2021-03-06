@@ -1,3 +1,4 @@
+import csv
 import os
 
 import discord
@@ -19,15 +20,17 @@ async def poke_command(discord_client, message, command, args):
 
         await poke_do_reactions(bot_message, index)
     else:
-        bot_message = await message.channel.send(args + " is not in the Avlarian Pokédex.")
+        embed_message = discord.Embed(title="I have some bad news...",
+                                      description=args + " is not in the Avlarian Pokédex.",
+                                      color=0x52307c)
+        bot_message = await message.channel.send(embed=embed_message)
         await bot_message.add_reaction("🗑️")
 
 
 def poke_do_embed(line):
     name = line["Name"]
-    title = "Nº" + line["Num"] + " - " + name
 
-    embed_message = discord.Embed(title=title,
+    embed_message = discord.Embed(title="Nº" + line["Num"] + " - " + name,
                                   description="Let's see, what can I tell you about " + name + "...",
                                   color=0x52307c)
     embed_message.set_thumbnail(url=line["Image"])
@@ -42,13 +45,23 @@ def poke_do_embed(line):
     return embed_message
 
 
+def poke_fetch_source_lines(sources):
+    source_lines = []
+    with open(file_utils.do_resources_path(CSV_SOURCES), "rt") as csv_file:
+        reader = csv.DictReader(csv_file, delimiter=',')
+        for csv_index, line in enumerate(reader):
+            if str(csv_index) in sources:
+                source_lines.append(line)
+    return source_lines
+
+
 def poke_do_sources(line):
     sources_raw = line["Sources"]
     sources_value = ""
     if len(sources_raw) > 0:
         sources = sources_raw.split("|")
-        for source_index in range(0, len(sources)):
-            source_line = file_utils.get_line_at_row(CSV_SOURCES, int(sources[source_index]))
+        source_lines = poke_fetch_source_lines(sources)
+        for source_line in source_lines:
             source_name = source_line["Name"]
             source_value = source_line["Link"]
             sources_value += "\n[" + source_name + "](" + source_value + ")"

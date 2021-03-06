@@ -4,6 +4,8 @@ from command_handlers.info import info_command
 from command_handlers.help import help_command
 from command_handlers.generate_csv import generate_csv_command
 from command_handlers.poke import poke_command
+from command_handlers.stories import stories_command
+from command_handlers.story import story_command
 from command_handlers.none import none_command
 
 from dotenv import load_dotenv
@@ -33,4 +35,6 @@ class Command:
 cmd_to_func = {"help": help_command,
                "info": info_command,
                "csv": generate_csv_command,
-               "poke": poke_command}
+               "poke": poke_command,
+               "stories": stories_command,
+               "story": story_command}

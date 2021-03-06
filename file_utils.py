@@ -1,10 +1,19 @@
 import csv
+import os
 
 import gspread
+from dotenv import load_dotenv
 from oauth2client.service_account import ServiceAccountCredentials
+
+load_dotenv()
+RESOURCES_FOLDER = os.getenv("RESOURCES_FOLDER")
 
 scope = ["https://www.googleapis.com/auth/spreadsheets",
          "https://www.googleapis.com/auth/drive"]
+
+
+def do_resources_path(file_path):
+    return os.path.normpath(RESOURCES_FOLDER + file_path)
 
 
 def open_spreadsheet(sheet_id):
@@ -16,7 +25,7 @@ def open_spreadsheet(sheet_id):
 
 def generate_spreadsheet_csv(spreadsheet):
     for worksheet in spreadsheet.worksheets():
-        filename = worksheet.title + '.csv'
+        filename = do_resources_path(worksheet.title + '.csv')
         with open(filename, 'wt') as file:
             writer = csv.writer(file)
             writer.writerows(worksheet.get_all_values())
@@ -24,7 +33,7 @@ def generate_spreadsheet_csv(spreadsheet):
 
 
 def get_index_in_column(file_path, column_name, element):
-    with open(file_path, "rt") as csv_file:
+    with open(do_resources_path(file_path), "rt") as csv_file:
         reader = csv.DictReader(csv_file, delimiter=',')
         for index, line in enumerate(reader):
             if line[column_name] == element:
@@ -33,7 +42,7 @@ def get_index_in_column(file_path, column_name, element):
 
 
 def get_line_at_row(file_path, index):
-    with open(file_path, "rt") as csv_file:
+    with open(do_resources_path(file_path), "rt") as csv_file:
         reader = csv.DictReader(csv_file, delimiter=',')
         for csv_index, line in enumerate(reader):
             if csv_index == index:
@@ -42,7 +51,7 @@ def get_line_at_row(file_path, index):
 
 
 def find_item_in_columns_and_get_row(file_path, column_names, element, ignore_case=True):
-    with open(file_path, "rt") as csv_file:
+    with open(do_resources_path(file_path), "rt") as csv_file:
         reader = csv.DictReader(csv_file, delimiter=',')
         for index, line in enumerate(reader):
             if isinstance(column_names, str):
@@ -63,6 +72,6 @@ def compare_item_with_case(element, content, ignore_case):
 
 
 def get_num_of_rows(file_path):
-    with open(file_path, "rt") as csv_file:
+    with open(do_resources_path(file_path), "rt") as csv_file:
         reader = csv.DictReader(csv_file, delimiter=',')
         return len(list(reader)) - 1
