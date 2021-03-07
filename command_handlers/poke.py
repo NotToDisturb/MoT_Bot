@@ -5,6 +5,7 @@ import discord
 from dotenv import load_dotenv
 
 import file_utils
+import message_utils
 
 load_dotenv()
 CSV_POKES = os.getenv("CSV_POKES")
@@ -12,7 +13,10 @@ CSV_SOURCES = os.getenv("CSV_SOURCES")
 
 
 async def poke_command(discord_client, message, command, args):
-    line, index = file_utils.find_item_in_columns_and_get_row(CSV_POKES, "Name", args)
+    if not args.isnumeric():
+        line, index = file_utils.find_item_in_columns_and_get_row(CSV_POKES, "Name", args)
+    else:
+        line, index = file_utils.find_item_in_columns_and_get_row(CSV_POKES, "Num", args)
     if index > -1:
         embed_message = poke_do_embed(line)
 
@@ -20,11 +24,9 @@ async def poke_command(discord_client, message, command, args):
 
         await poke_do_reactions(bot_message, index)
     else:
-        embed_message = discord.Embed(title="I have some bad news...",
-                                      description=args + " is not in the Avlarian Pokédex.",
-                                      color=0x52307c)
-        bot_message = await message.channel.send(embed=embed_message)
-        await bot_message.add_reaction("🗑️")
+        await message_utils.do_simple_embed(channel=message.channel,
+                                            title="I have some bad news...",
+                                            description=args + " is not in the Avlarian Pokédex.")
 
 
 def poke_do_embed(line):

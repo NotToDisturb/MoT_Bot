@@ -44,12 +44,13 @@ async def handle_directional_story(reaction, user, direction):
     story_raw = reaction.message.embeds[0].fields[0].name.split(" - Part")
     line, index = file_utils.find_item_in_columns_and_get_row(CSV_STORIES, "Name", story_raw[0])
     part = int(story_raw[1]) - 1 + get_direction_offset(direction)
+    parts = int(line["Parts"])
 
     embed_message = story.story_do_embed(line, part)
     await reaction.message.edit(embed=embed_message)
 
     await reaction.message.clear_reactions()
-    await story.story_do_reactions(reaction.message, line, part)
+    await story.story_do_reactions(reaction.message, parts, part)
 
 
 def get_message_type(message):
