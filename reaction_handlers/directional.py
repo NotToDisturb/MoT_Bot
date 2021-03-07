@@ -3,7 +3,7 @@ import os
 from dotenv import load_dotenv
 
 import file_utils
-from command_handlers import poke, story
+from command_handlers import poke, pokes, story
 
 load_dotenv()
 
@@ -26,6 +26,20 @@ async def handle_directional_poke(reaction, user, direction):
     await poke.poke_do_reactions(reaction.message, index)
 
 
+async def handle_directional_pokes(reaction, user, direction):
+    footer = reaction.message.embeds[0].footer.text
+    page_raw = footer.replace("Page ", "").replace(" Pokémon per page", "").split(" - Showing")
+    page = int(page_raw[0]) - 1 + get_direction_offset(direction)
+    per_page = int(page_raw[1])
+    contents = pokes.pokes_fetch_page(page, per_page)
+
+    embed_message = pokes.pokes_do_embed(page, per_page, contents)
+    await reaction.message.edit(embed=embed_message)
+
+    await reaction.message.clear_reactions()
+    await pokes.pokes_do_reactions(reaction.message, page, per_page)
+
+
 async def handle_directional_story(reaction, user, direction):
     story_raw = reaction.message.embeds[0].fields[0].name.split(" - Part")
     line, index = file_utils.find_item_in_columns_and_get_row(CSV_STORIES, "Name", story_raw[0])
@@ -42,8 +56,10 @@ def get_message_type(message):
     title = message.embeds[0].title
     if title.startswith("Nº"):
         return 0
-    elif title == "Story time!":
+    elif title.startswith("Page "):
         return 1
+    elif title == "Story time!":
+        return 2
 
 
 def get_direction_offset(direction):
@@ -54,6 +70,7 @@ def get_direction_offset(direction):
 
 
 type_to_func = [handle_directional_poke,
+                handle_directional_pokes,
                 handle_directional_story]
 
 
