@@ -23,8 +23,8 @@ async def story_command(discord_client, message, command, args):
     # Show error message and exit
     if not story_search:
         await message_utils.do_simple_embed(channel=message.channel,
-                                            title="I didn't quite catch that",
-                                            description="Try putting the story you want inside quotation marks.")
+                                            title="Uh... Which story do you want?",
+                                            description="Try putting its name inside quotation marks.")
         return
 
     name_raw = story_search.group(0)
@@ -66,8 +66,8 @@ async def story_command(discord_client, message, command, args):
     if part >= parts:
         await message_utils.do_simple_embed(channel=message.channel,
                                             title="Huh, there's a problem",
-                                            description="I do know \"" + line["Name"]
-                                                        + "\" but it doesn't have that many parts.")
+                                            description="I know " + "[\"" + line["Name"] + "\"](" + line["Link"] + ")"
+                                                        + " but it doesn't have that many parts.")
         return
 
     # EVERYTHING CORRECT
@@ -114,12 +114,12 @@ def story_do_on_group(line):
     group_line = file_utils.get_line_at_row(CSV_STORY_GROUPS, int(line["Group"]))
     if group_line["Name"] == "":                                # The group this story belongs to does not have a name
         return None, None
-    else:
-        others_list = story_get_all_in_group(line)
-        others = ""
-        for other in others_list:
-            others = "[" + other["Name"] + "](" + other["Link"] + ")" + "\n"
-        return group_line["Name"], others
+
+    others_list = story_get_all_in_group(line)
+    others = ""
+    for other in others_list:
+        others = "[" + other["Name"] + "](" + other["Link"] + ")" + "\n"
+    return group_line["Name"], others
 
 
 def story_do_read(line, part):

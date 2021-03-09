@@ -17,21 +17,24 @@ async def poke_command(discord_client, message, command, args):
         line, index = file_utils.find_item_in_columns_and_get_row(CSV_POKES, "Name", args)
     else:
         line, index = file_utils.find_item_in_columns_and_get_row(CSV_POKES, "Num", args)
-    if index > -1:
-        embed_message = poke_do_embed(line)
 
-        bot_message = await message.channel.send(embed=embed_message)
-
-        await poke_do_reactions(bot_message, index)
-    else:
+    # MON NAME OR NUMBER NOT FOUND IN CSV
+    # Show error message and return
+    if line == - 1:
         await message_utils.do_simple_embed(channel=message.channel,
                                             title="I have some bad news...",
                                             description=args + " is not in the Avlarian Pokédex.")
+        return
+
+    # EVERYTHING CORRECT
+    # Create embedded message and add corresponding reactions
+    embed_message = poke_do_embed(line)
+    bot_message = await message.channel.send(embed=embed_message)
+    await poke_do_reactions(bot_message, index)
 
 
 def poke_do_embed(line):
     name = line["Name"]
-
     embed_message = discord.Embed(title="Nº" + line["Num"] + " - " + name,
                                   description="Let's see, what can I tell you about " + name + "...",
                                   color=0x52307c)
@@ -59,29 +62,37 @@ def poke_fetch_source_lines(sources):
 
 def poke_do_sources(line):
     sources_raw = line["Sources"]
-    sources_value = ""
     if len(sources_raw) > 0:
-        sources = sources_raw.split("|")
-        source_lines = poke_fetch_source_lines(sources)
-        for source_line in source_lines:
-            source_name = source_line["Name"]
-            source_value = source_line["Link"]
-            sources_value += "\n[" + source_name + "](" + source_value + ")"
-        return "It's been spotted!", sources_value
+        return poke_do_sources_spotted(sources_raw)
     else:
-        evolutions = line["Evolves"].split("|")
-        has_from, has_to = False, False
-        from_text = "__Spotted re-evolutions:__"
-        to_text = "__Spotted evolutions:__"
-        for evo_raw in evolutions:
-            evolution = evo_raw.split(":")
-            if evolution[0] == "from":
-                from_text += "\n" + evolution[1]
-                has_from = True
-            else:
-                to_text += "\n" + evolution[1]
-                has_to = True
-        return "We've seen part of its line!", (from_text + "\n\n" if has_from else "") + (to_text if has_to else "")
+        return poke_do_sources_evolutions(line)
+
+
+def poke_do_sources_spotted(sources_raw):
+    sources = sources_raw.split("|")
+    source_lines = poke_fetch_source_lines(sources)
+    sources_value = ""
+    for source_line in source_lines:
+        source_name = source_line["Name"]
+        source_value = source_line["Link"]
+        sources_value += "\n[" + source_name + "](" + source_value + ")"
+    return "It's been spotted!", sources_value
+
+
+def poke_do_sources_evolutions(line):
+    evolutions = line["Evolves"].split("|")
+    has_from, has_to = False, False
+    from_text = "__Spotted pre-evolutions:__"
+    to_text = "__Spotted evolutions:__"
+    for evo_raw in evolutions:
+        evolution = evo_raw.split(":")
+        if evolution[0] == "from":
+            from_text += "\n" + evolution[1]
+            has_from = True
+        else:
+            to_text += "\n" + evolution[1]
+            has_to = True
+    return "We've seen part of its line!", (from_text + "\n\n" if has_from else "") + (to_text if has_to else "")
 
 
 async def poke_do_reactions(message, index):

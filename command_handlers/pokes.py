@@ -5,28 +5,29 @@ import discord
 from dotenv import load_dotenv
 
 import file_utils
+import message_utils
 
 load_dotenv()
 CSV_POKES = os.getenv("CSV_POKES")
 
 
 async def pokes_command(discord_client, message, command, args):
-    page_raw = args.split(" ")
-    if len(page_raw) > 0:
-        if page_raw[0] == "skip":
+    page_raw = [] if args == "" else args.split(" ")
+    if len(page_raw) > 0:                       # There are arguments
+        if page_raw[0] == "skip":               # The first argument is to be skipped
             page = 0
-        elif not page_raw[0].isnumeric():
+        elif not page_raw[0].isnumeric():       # The first argument is not a number
             page = 0
-            await pokes_do_unexpected(message, page_raw[0], 1)
+            await pokes_do_unexpected_page(message, page_raw[0], 1)
         else:
             page = int(page_raw[0]) - 1
     else:
         page = 0
 
-    if len(page_raw) > 1:
-        if not page_raw[1].isnumeric():
+    if len(page_raw) > 1:                       # There is a second argument
+        if not page_raw[1].isnumeric():         # The second argument is not a number
             per_page = 10
-            await pokes_do_unexpected(message, page_raw[1], 10)
+            await pokes_do_unexpected_per_page(message, page_raw[1], 10)
         else:
             per_page = int(page_raw[1])
     else:
@@ -34,30 +35,36 @@ async def pokes_command(discord_client, message, command, args):
 
     contents = pokes_fetch_page(page, per_page)
 
-    if len(contents) > 0:
-        embed_message = pokes_do_embed(page, per_page, contents)
+    # PAGE CONTAINS NO POKÉMON
+    # Show error message and exit
+    if len(contents) == 0:
+        await message_utils.do_simple_embed(channel=message.channel,
+                                            title="Page " + str(page + 1) + " you say?",
+                                            description="I'm afraid the Avlarian Pokédex is not that long.")
+        return
 
-        bot_message = await message.channel.send(embed=embed_message)
-
-        await pokes_do_reactions(bot_message, page, per_page)
-    else:
-        embed_message = discord.Embed(title="Page " + str(page + 1) + " you say?",
-                                      description="I'm afraid that's not in the Avlarian Pokédex.",
-                                      color=0x52307c)
-
-        bot_message = await message.channel.send(embed=embed_message)
-
-        await bot_message.add_reaction("🗑️")
+    # EVERYTHING CORRECT
+    # Create embedded message and add corresponding reactions
+    embed_message = pokes_do_embed(page, per_page, contents)
+    bot_message = await message.channel.send(embed=embed_message)
+    await pokes_do_reactions(bot_message, page, per_page)
 
 
-async def pokes_do_unexpected(message, incorrect, interpreted):
+async def pokes_do_unexpected_page(message, incorrect, interpreted):
     embed_message = discord.Embed(title="I didn't quite catch that",
-                                  description="You asked about " + str(incorrect) +
+                                  description="You asked about page `" + str(incorrect) + "` " +
                                               " but that doesn't work, so I'll go with " + str(interpreted) + ".",
                                   color=0x52307c)
-
     bot_message = await message.channel.send(embed=embed_message)
+    await bot_message.delete(delay=5)
 
+
+async def pokes_do_unexpected_per_page(message, incorrect, interpreted):
+    embed_message = discord.Embed(title="I didn't quite catch that",
+                                  description="You asked about `" + str(incorrect) + "` Pokémon per page " +
+                                              "but that doesn't work, so I'll go with " + str(interpreted) + ".",
+                                  color=0x52307c)
+    bot_message = await message.channel.send(embed=embed_message)
     await bot_message.delete(delay=5)
 
 
@@ -80,7 +87,7 @@ def pokes_fetch_page(page, per_page):
         for index, line in enumerate(reader):
             if index >= (page + 1) * per_page:
                 break
-            elif index >= page * per_page:
+            if index >= page * per_page:
                 page_contents.append(line)
         return page_contents
 

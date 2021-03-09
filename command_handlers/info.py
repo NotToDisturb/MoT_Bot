@@ -17,4 +17,5 @@ async def info_command(discord_client, message, command, args):
                                   color=0x52307c)
     embed_message.set_footer(text="Built by Disturbo",
                              icon_url=DISTURBO_ICON)
-    await message.channel.send(embed=embed_message)
+    bot_message = await message.channel.send(embed=embed_message)
+    await bot_message.add_reaction("🗑️")
