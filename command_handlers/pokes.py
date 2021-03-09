@@ -69,11 +69,15 @@ async def pokes_do_unexpected_per_page(message, incorrect, interpreted):
 
 
 def pokes_do_embed(page, per_page, contents):
-    page_contents = pokes_do_page(contents)
+    numbers, names = pokes_do_page(contents)
 
     embed_message = discord.Embed(title="Page " + str(page + 1) + "? Yes, here you go",
-                                  description=page_contents,
+                                  description="",
                                   color=0x52307c)
+    embed_message.add_field(name="Num.",
+                            value=numbers)
+    embed_message.add_field(name="Pokémon",
+                            value=names)
 
     embed_message.set_footer(text="Page " + str(page + 1) + " - Showing " + str(per_page) + " Pokémon per page")
 
@@ -93,10 +97,12 @@ def pokes_fetch_page(page, per_page):
 
 
 def pokes_do_page(contents):
-    page_contents = ""
+    numbers = ""
+    names = ""
     for line in contents:
-        page_contents += "Nº" + line["Num"] + " - " + line["Name"] + "\n"
-    return page_contents
+        numbers += "Nº " + line["Num"] + "\n"
+        names += line["Name"] + "\n"
+    return numbers, names
 
 
 async def pokes_do_reactions(message, page, per_page):
