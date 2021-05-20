@@ -4,15 +4,17 @@ from reaction_handlers.index_paginator_handler import IndexPaginatorHandler
 
 
 class IndexPaginator:
-    def __init__(self, ctx, args):
+    def __init__(self, ctx, args, per_page=-1):
         self.ctx = ctx
         self.args = args
+        self.per_page = per_page
 
     async def start(self):
         if len(self.args) > 0:  # There are arguments
             if self.args[0] == "skip":  # The first argument is to be skipped
                 page = 0
-            elif not self.args[0].isnumeric():  # The first argument is not a number
+            elif not self.args[0].isnumeric() \
+                    or int(self.args[0]) - 1 < 0:  # The first argument is not a number
                 page = 0
                 await self.do_unexpected_page(self.ctx, self.args[0], 1)
             else:
@@ -20,14 +22,18 @@ class IndexPaginator:
         else:
             page = 0
 
-        if len(self.args) > 1:  # There is a second argument
-            if not self.args[1].isnumeric():  # The second argument is not a number
-                per_page = 10
-                await self.do_unexpected_per_page(self.ctx, self.args[1], 10)
-            else:
-                per_page = int(self.args[1])
+        if self.per_page > -1:
+            per_page = self.per_page
         else:
-            per_page = 10
+            if len(self.args) > 1:  # There is a second argument
+                if not self.args[1].isnumeric() \
+                        or int(self.args[1]) - 1 < 0:  # The second argument is not a number
+                    per_page = 10
+                    await self.do_unexpected_per_page(self.ctx, self.args[1], 10)
+                else:
+                    per_page = int(self.args[1])
+            else:
+                per_page = 10
 
         pages = self.get_pages(per_page)
         # PAGE IS HIGHER THAN EXISTING PAGES

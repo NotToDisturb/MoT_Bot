@@ -17,7 +17,7 @@ CSV_SOURCES = os.getenv("CSV_SOURCES")
 class SourcesCog(commands.Cog):
     @commands.command(name="sources")
     async def sources_command(self, ctx, *args):
-        await IndexSources(ctx, args).start()
+        await IndexSources(ctx, args, 10).start()
 
 
 class IndexSources(IndexPaginator):
