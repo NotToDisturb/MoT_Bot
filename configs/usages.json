@@ -8,5 +8,7 @@
     ],
     "poke": ["`{prefix}poke <poke>`"],
     "stories": ["`{prefix}stories`"],
-    "story": ["`{prefix}story`"]
+    "story": [
+        "`{prefix}story \"<story name>\"`",
+        "`{prefix}story \"<story name>\" <story part>`"]
 }

@@ -1,6 +1,7 @@
 import json
 import os
 import discord
+from inspect import Parameter
 
 
 async def do_simple_embed(context, title, description):
@@ -9,7 +10,6 @@ async def do_simple_embed(context, title, description):
                                   color=0x52307c)
     bot_message = await context.send(embed=embed_message)
     await bot_message.add_reaction("🗑️")
-
     return bot_message
 
 
@@ -20,11 +20,13 @@ def message_has_reaction(message, emoji):
     return None
 
 
-def get_direction_offset(direction):
-    if direction == "back":
-        return -1
-    if direction == "forward":
-        return 1
+def raise_incorrect_usage():
+    raise discord.ext.commands.MissingRequiredArgument(Parameter(
+        name="missing_arg",
+        default=Parameter.empty,
+        annotation=Parameter.empty,
+        kind=Parameter.POSITIONAL_OR_KEYWORD
+    ))
 
 
 class Singleton(type):
@@ -48,6 +50,10 @@ class Configs(metaclass=Singleton):
 
 def get_config(config):
     return Configs().configs[config]
+
+
+def get_env_variable(key):
+    return os.getenv(key)
 
 
 class MessageTracker(metaclass=Singleton):

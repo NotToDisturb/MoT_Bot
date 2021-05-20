@@ -4,6 +4,7 @@ import os
 import discord
 from dotenv import load_dotenv
 from discord.ext import commands
+from inspect import Parameter
 
 import file_utils
 import utils
@@ -18,6 +19,9 @@ CSV_STORIES = os.getenv("CSV_STORIES")
 class StoryCog(commands.Cog):
     @commands.command(name="story")
     async def story_command(self, ctx, *args):
+        if len(args) == 0:
+            utils.raise_incorrect_usage()
+
         # INCORRECT PART ARGUMENT FORMAT
         # Show error message and exit
         if len(args) > 1 and not args[1].isnumeric():
