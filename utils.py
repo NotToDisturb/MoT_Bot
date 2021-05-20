@@ -52,10 +52,6 @@ def get_config(config):
     return Configs().configs[config]
 
 
-def get_env_variable(key):
-    return os.getenv(key)
-
-
 class MessageTracker(metaclass=Singleton):
     tracked = {}
 
