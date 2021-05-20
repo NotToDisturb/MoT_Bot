@@ -1,0 +1,12 @@
+{
+    "info": ["`{prefix}info`"],
+    "pokes": [
+        "`{prefix}pokes",
+        "`{prefix}pokes <page number>`",
+        "`{prefix}pokes skip <pokes per page>`",
+        "`{prefix}pokes <page number> <pokes per page>`"
+    ],
+    "poke": ["`{prefix}poke <poke>`"],
+    "stories": ["`{prefix}stories`"],
+    "story": ["`{prefix}story`"]
+}

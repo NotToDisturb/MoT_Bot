@@ -1,0 +1,61 @@
+{
+    "global": {
+        "color": "0x52307c",
+        "footer:": {
+            "text": "Built by Disturbo",
+            "url": "https://avatars.githubusercontent.com/u/16744563?s=460&u=e570ce6dbdb0c6ff2f3b5e4e116090b7b4b1a9e6"
+        },
+        "options": "`info`\n`pokes` `poke`\n`stories` `story`\n`reactions`"
+    },
+    "messages": {
+        "": {
+            "title": "I see you need some help!",
+            "description": "Let me explain how you can get the info you need. To use the `{prefix}help` command you must follow the structure `{prefix}help <help option>`.\n\nThe help options I have are:\n{options}"
+        },
+        "info": {
+            "title": "Help on \"info\" you say?",
+            "description": "With this command you won't really do much, but I'll tell you a bit about myself!\n\nType `{prefix}info` to use it."
+        },
+        "pokes": {
+            "title": "Help on \"pokes\" you say?",
+            "description": "Stub"
+        },
+        "poke": {
+            "title": "Help on \"poke\" you say?",
+            "description": "Stub"
+        },
+        "stories": {
+            "title": "Help on \"stories\" you say?",
+            "description": "Stub"
+        },
+        "story": {
+            "title": "Help on \"story\" you say?",
+            "description": "Stub"
+        },
+        "reactions": {
+            "title": "Help on \"reactions\" you say?",
+            "description": "Stub",
+            "fields": [
+                {
+                    "name": "\uD83D\uDDD1️ Trash can",
+                    "value": "Deletes the message.",
+                    "inline": true
+                },
+                {
+                    "name": "◀️ Left arrow",
+                    "value": "Displays the previous element.",
+                    "inline": true
+                },
+                {
+                    "name": "▶️ Trash can",
+                    "value": "Displays the next element.",
+                    "inline": true
+                }
+            ]
+        },
+        "fallback": {
+            "title": "I see you need some help!",
+            "description": "I don't really know how to help you with that! To use the `{prefix}help` command you must follow the structure `{prefix}help <help option>`.\n\nThe help options I can tell you about are:\n{options}"
+        }
+    }
+}

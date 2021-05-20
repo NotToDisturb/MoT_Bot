@@ -1,22 +1,14 @@
-from reaction_handlers.wastebasket import wastebasket_reaction
-from reaction_handlers.directional import back_reaction
-from reaction_handlers.directional import forward_reaction
+from utils import get_tracker
 
 
 async def is_reaction_valid(discord_client, reaction, user):
-    has_bot = False
     async for reactor in reaction.users():
         if reactor == discord_client.user:
-            has_bot = True
-            break
-
-    return user != discord_client.user and has_bot
-
-
-reaction_to_func = {"🗑️": wastebasket_reaction,
-                    "◀️": back_reaction,
-                    "▶️": forward_reaction}
+            return user != discord_client.user
+    return False
 
 
 async def handle_reaction(reaction, user):
-    await reaction_to_func.get(reaction.emoji)(reaction, user)
+    message_data = get_tracker().get_message(reaction.message.id)
+    if message_data:
+        await message_data["reaction_handler"].handle_reaction(reaction, user, message_data)
