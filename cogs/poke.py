@@ -7,7 +7,9 @@ from discord.ext import commands
 
 import file_utils
 import utils
-from reaction_handlers.reaction_handler import DeleteHandler
+
+from paginators.paginator import Paginator
+from reaction_handlers.general_handlers import DeleteHandler
 from reaction_handlers.poke_handler import PokeHandler
 
 
@@ -19,66 +21,63 @@ CSV_SOURCES = os.getenv("CSV_SOURCES")
 class PokeCog(commands.Cog):
     @commands.command(name="poke")
     async def poke_command(self, ctx, *, poke):
-        if not poke.isnumeric():
-            line, index = file_utils.find_item_in_columns_and_get_row(CSV_POKES, "Name", poke)
-        else:
-            line, index = file_utils.find_item_in_columns_and_get_row(CSV_POKES, "Num", poke)
+        await PokePaginator(ctx, poke).start()
 
-        # MON NAME OR NUMBER NOT FOUND IN CSV
-        # Show error message and return
-        if line == - 1:
-            await do_not_in_dex(ctx, poke)
-            return
 
-        # EVERYTHING CORRECT
-        # Create embedded message and add corresponding reactions
-        embed_message = do_embed(line)
-        message = await ctx.send(embed=embed_message)
-        await add_reactions(message)
+class PokePaginator(Paginator):
+    async def do_page_too_high(self, page):
+        message = await utils.do_simple_embed(
+            context=self.ctx,
+            title="I have some bad news...",
+            description=f"{page} is not in the Avlarian Pokédex."
+        )
         utils.get_tracker().track_message(message.id, {
-            "author": ctx.author.id,
-            "dex_num": line["Num"],
-            "reaction_handler": PokeHandler(do_embed)
+            "author": self.ctx.author.id,
+            "reaction_handler": DeleteHandler()
         })
 
+    async def get_page(self):
+        if not self.args.isnumeric():
+            line, index = file_utils.find_item_in_columns_and_get_row(CSV_POKES, "Name", self.args)
+        else:
+            line, index = file_utils.find_item_in_columns_and_get_row(CSV_POKES, "Num", self.args)
+        return line
 
-async def do_not_in_dex(ctx, poke):
-    message = await utils.do_simple_embed(
-        context=ctx,
-        title="I have some bad news...",
-        description=f"{poke} is not in the Avlarian Pokédex."
-    )
-    utils.get_tracker().track_message(message.id, {
-        "author": ctx.author.id,
-        "reaction_handler": DeleteHandler()
-    })
+    async def get_per_page(self):
+        return 1
 
+    async def get_pages(self, page, per_page):
+        return file_utils.get_num_of_rows(CSV_POKES)
 
-def do_embed(line):
-    name = line["Name"]
-    embed_message = discord.Embed(title="Nº" + line["Num"] + " - " + name,
-                                  description="Let's see, what can I tell you about " + name + "...",
-                                  color=0x52307c)
-    embed_message.set_thumbnail(url=line["Image"])
+    async def do_page_validity(self, page, pages):
+        if page == - 1:
+            await self.do_page_too_high(self.ctx, page)
+            return False
+        return True
 
-    sources_title, sources_value = get_sources(line)
-    embed_message.add_field(name=sources_title, value=sources_value, inline=False)
+    def build_embed(self, page, per_page):
+        name = page["Name"]
+        embed_message = discord.Embed(title=f'Nº{page["Num"]} - {name}',
+                                      description=f"Let's see, what can I tell you about {name}...",
+                                      color=0x52307c)
+        embed_message.set_thumbnail(url=page["Image"])
 
-    notes = line["Notes"]
-    if len(notes) > 0:
-        embed_message.add_field(name="Oh, and some extra notes", value=notes, inline=False)
+        sources_title, sources_value = get_sources(page)
+        embed_message.add_field(name=sources_title, value=sources_value, inline=False)
 
-    return embed_message
+        notes = page["Notes"]
+        if len(notes) > 0:
+            embed_message.add_field(name="Oh, and some extra notes", value=notes, inline=False)
 
+        return embed_message
 
-def get_source_lines(sources):
-    source_lines = []
-    with open(file_utils.do_resources_path(CSV_SOURCES), "rt") as csv_file:
-        reader = csv.DictReader(csv_file, delimiter=',')
-        for csv_index, line in enumerate(reader):
-            if str(csv_index) in sources:
-                source_lines.append(line)
-    return source_lines
+    def track_message(self, message, page, per_page, pages):
+        utils.get_tracker().track_message(message.id, {
+            "author": self.ctx.author.id,
+            "dex_num": page["Num"],
+            "dex_entries": pages,
+            "reaction_handler": PokeHandler(self.build_embed)
+        })
 
 
 def get_sources(line):
@@ -94,9 +93,7 @@ def build_sources_spotted(sources_raw):
     source_lines = get_source_lines(sources)
     sources_value = ""
     for source_line in source_lines:
-        source_name = source_line["Name"]
-        source_value = source_line["Link"]
-        sources_value += "\n[" + source_name + "](" + source_value + ")"
+        sources_value += f'\n[{source_line["Name"]}]({source_line["Link"]})'
     return "It's been spotted!", sources_value
 
 
@@ -108,18 +105,19 @@ def build_sources_evolutions(line):
     for evo_raw in evolutions:
         evolution = evo_raw.split(":")
         if evolution[0] == "from":
-            from_text += "\n" + evolution[1]
+            from_text += f"\n{evolution[1]}"
             has_from = True
         else:
-            to_text += "\n" + evolution[1]
+            to_text += f"\n{evolution[1]}"
             has_to = True
-    return "We've seen part of its line!", (from_text + "\n\n" if has_from else "") + (to_text if has_to else "")
+    return "We've seen part of its page!", (f"{from_text}\n\n" if has_from else "") + (to_text if has_to else "")
 
 
-async def add_reactions(message):
-    await message.add_reaction("◀️")
-    await message.add_reaction("▶️")
-    await message.add_reaction("🗑️")
+def get_source_lines(sources):
+    with open(file_utils.do_resources_path(CSV_SOURCES), "rt") as csv_file:
+        reader = csv.DictReader(csv_file, delimiter=',')
+        return [line for csv_index, line in enumerate(reader)
+                if str(csv_index) in sources]
 
 
 def setup(discord_client):

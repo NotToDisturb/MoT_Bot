@@ -5,7 +5,7 @@ class ReactionHandler:
     reaction_to_function = {}
 
     def __init__(self, do_embed=None):
-        self.do_embed = do_embed
+        self.build_embed = do_embed
 
     async def handle_reaction(self, reaction, user, message_data):
         if user.id == message_data["author"]:

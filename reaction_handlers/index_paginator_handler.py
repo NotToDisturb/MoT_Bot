@@ -1,15 +1,14 @@
 import os
 
-from reaction_handlers.reaction_handler import SideArrowsHandler
+from reaction_handlers.general_handlers import SideArrowsHandler
 
 CSV_POKES = os.getenv("CSV_POKES")
 CSV_SOURCES = os.getenv("CSV_SOURCES")
 
 
 class IndexPaginatorHandler(SideArrowsHandler):
-    def __init__(self, do_embed, get_page):
-        self.do_embed = do_embed
-        self.get_page = get_page
+    def __init__(self, build_embed):
+        self.build_embed = build_embed
 
     async def handle_directional_arrow(self, reaction, user, message_data, offset):
         page = message_data["page"] + offset
@@ -19,8 +18,7 @@ class IndexPaginatorHandler(SideArrowsHandler):
             page = 0
         elif page == -1:
             page = pages_total - 1
-        contents = self.get_page(page, per_page)
         message_data["page"] = page
-        embed_message = self.do_embed(page, per_page, contents)
+        embed_message = self.build_embed(page, per_page)
         await reaction.message.edit(embed=embed_message)
         await self.update_reactions(reaction.message, page, 0, pages_total)

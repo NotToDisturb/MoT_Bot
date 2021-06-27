@@ -6,7 +6,7 @@ from discord.ext import commands
 
 import file_utils
 import utils
-from reaction_handlers.reaction_handler import DeleteHandler
+from reaction_handlers.general_handlers import DeleteHandler
 
 load_dotenv()
 CSV_STORY_GROUPS = os.getenv("CSV_STORY_GROUPS")
@@ -23,10 +23,10 @@ class StoriesCog(commands.Cog):
         for group in groups:
             dash = ""
             if group.title != "":
-                description += "\n**" + group.title + "**"
+                description += f"\n**{group.title}**"
                 dash = "- "
             for story in group.stories:
-                description += "\n" + dash + "[" + story["Name"] + "](" + story["Link"] + ")"
+                description += f'\n{dash}[{story["Name"]}]({story["Link"]})'
             description += "\n"
 
         message = await utils.do_simple_embed(

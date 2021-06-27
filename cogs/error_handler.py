@@ -1,4 +1,6 @@
 import os
+import sys
+import traceback
 
 import discord
 from dotenv import load_dotenv
@@ -41,7 +43,8 @@ class ErrorHandlerCog(commands.Cog):
         else:
             title = "I didn't quite catch that"
             description = "I'll have to add this to my pending research."
-            print(f"[WARNING] Unhandled command error:\n{str(error)}")
+            print(f"[WARNING] Unhandled command error:")
+            traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
         embed = discord.Embed(title=title,
                               description=description,

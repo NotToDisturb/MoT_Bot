@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from discord.ext import commands
 
 from utils import get_config, get_tracker
-from reaction_handlers.reaction_handler import DeleteHandler
+from reaction_handlers.general_handlers import DeleteHandler
 
 load_dotenv()
 DISCORD_PREFIX = os.getenv("DISCORD_PREFIX")
