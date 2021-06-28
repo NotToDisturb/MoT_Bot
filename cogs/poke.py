@@ -114,7 +114,7 @@ def build_sources_evolutions(line):
 
 
 def get_source_lines(sources):
-    with open(file_utils.do_resources_path(CSV_SOURCES), "rt", encoding="utf-8") as csv_file:
+    with open(file_utils.do_resources_path(CSV_SOURCES), "rt", encoding="ISO-8859-1") as csv_file:
         reader = csv.DictReader(csv_file, delimiter=',')
         return [line for csv_index, line in enumerate(reader)
                 if str(csv_index) in sources]

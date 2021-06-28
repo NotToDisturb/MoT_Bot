@@ -83,7 +83,7 @@ class StoryPaginator(Paginator):
         message = await utils.do_simple_embed(
             context=self.ctx,
             title="I have some bad news...",
-            description=f"{self.args[0]} is not in my records."
+            description=f"`{self.args[0]}` is not in my records."
         )
         utils.get_tracker().track_message(message.id, {
             "author": self.ctx.author.id,
@@ -94,7 +94,7 @@ class StoryPaginator(Paginator):
         message = await utils.do_simple_embed(
             context=self.ctx,
             title="I have some bad news...",
-            description=f"{self.args[0]} is not that long."
+            description=f"`{self.args[0]}` is not that long."
         )
         utils.get_tracker().track_message(message.id, {
             "author": self.ctx.author.id,
@@ -104,10 +104,10 @@ class StoryPaginator(Paginator):
     async def get_page(self):
         line, index = file_utils.find_item_in_columns_and_get_row(CSV_STORIES, "Name", self.args[0])
         if len(self.args) > 1 and not self.args[1].isnumeric():
-            await self.do_unexpected_page(self.ctx, self.args[1], 1)
+            await self.do_unexpected_page(self.args[1], 1)
             return line, 0
         elif len(self.args) > 1 and self.args[1].isnumeric():  # Part argument found and has correct format
-            return line, int(self.args[0]) - 1
+            return line, int(self.args[1]) - 1
         else:  # Part argument not found
             return line, 0
 
@@ -121,7 +121,7 @@ class StoryPaginator(Paginator):
 
     async def do_page_validity(self, page, pages):
         if not page[0]:
-            await self.do_not_a_story(page)
+            await self.do_not_a_story()
             return False
         elif page[1] > int(page[0]["Parts"]):
             await self.do_page_too_high(page)

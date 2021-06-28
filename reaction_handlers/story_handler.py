@@ -14,8 +14,12 @@ class StoryHandler(SideArrowsHandler):
         line = message_data["line"]
         part = message_data["part"] + offset
         parts = int(line["Parts"]) - 1
+        if part > parts:
+            part = 0
+        elif part == -1:
+            part = parts
         message_data["part"] = part
         embed_message = self.build_embed((line, part), 0)
         await reaction.message.edit(embed=embed_message)
 
-        await self.update_reactions(reaction.message, part, 0, parts, False)
+        await self.update_reactions(reaction.message, part, 0, parts)
