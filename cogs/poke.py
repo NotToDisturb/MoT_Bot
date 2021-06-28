@@ -46,7 +46,7 @@ class PokePaginator(Paginator):
     async def get_per_page(self):
         return 1
 
-    async def get_pages(self, page, per_page):
+    def get_pages(self, page, per_page):
         return file_utils.get_num_of_rows(CSV_POKES)
 
     async def do_page_validity(self, page, pages):
@@ -110,11 +110,11 @@ def build_sources_evolutions(line):
         else:
             to_text += f"\n{evolution[1]}"
             has_to = True
-    return "We've seen part of its page!", (f"{from_text}\n\n" if has_from else "") + (to_text if has_to else "")
+    return "We've seen part of its line!", (f"{from_text}\n\n" if has_from else "") + (to_text if has_to else "")
 
 
 def get_source_lines(sources):
-    with open(file_utils.do_resources_path(CSV_SOURCES), "rt") as csv_file:
+    with open(file_utils.do_resources_path(CSV_SOURCES), "rt", encoding="utf-8") as csv_file:
         reader = csv.DictReader(csv_file, delimiter=',')
         return [line for csv_index, line in enumerate(reader)
                 if str(csv_index) in sources]
