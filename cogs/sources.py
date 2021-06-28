@@ -65,7 +65,7 @@ class IndexSources(IndexPaginator):
 
     def get_page_contents(self, page, per_page):
         page_contents = []
-        with open(file_utils.do_resources_path(CSV_SOURCES), "rt") as csv_file:
+        with open(file_utils.do_resources_path(CSV_SOURCES), "rt", encoding="ISO-8859-1") as csv_file:
             reader = csv.DictReader(csv_file, delimiter=',')
             for index, line in enumerate(reader):
                 if index >= (page + 1) * per_page:
