@@ -60,7 +60,7 @@ class IndexPokes(IndexPaginator):
 
     def get_pages(self, page, per_page):
         pages_total = file_utils.get_num_of_rows(CSV_POKES) // per_page
-        return pages_total + 1 if file_utils.get_num_of_rows(CSV_POKES) % per_page > 0 else 0
+        return pages_total + (1 if file_utils.get_num_of_rows(CSV_POKES) % per_page > 0 else 0)
 
     def get_page_contents(self, page, per_page):
         page_contents = []

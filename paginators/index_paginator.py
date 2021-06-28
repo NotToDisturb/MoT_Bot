@@ -39,7 +39,7 @@ class IndexPaginator(Paginator):
 
     async def do_page_validity(self, page, pages):
         if page >= pages:
-            await self.do_page_too_high(self.ctx, page)
+            await self.do_page_too_high(page)
             return False
         return True
 

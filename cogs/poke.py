@@ -50,8 +50,8 @@ class PokePaginator(Paginator):
         return file_utils.get_num_of_rows(CSV_POKES)
 
     async def do_page_validity(self, page, pages):
-        if page == - 1:
-            await self.do_page_too_high(self.ctx, page)
+        if page == -1:
+            await self.do_page_too_high(page)
             return False
         return True
 

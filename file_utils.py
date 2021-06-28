@@ -74,4 +74,4 @@ def compare_item_with_case(element, content, ignore_case):
 def get_num_of_rows(file_path):
     with open(do_resources_path(file_path), "rt") as csv_file:
         reader = csv.DictReader(csv_file, delimiter=',')
-        return len(list(reader)) - 1
+        return len(list(reader))

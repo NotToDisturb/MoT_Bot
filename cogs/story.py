@@ -50,7 +50,7 @@ class StoryCog(commands.Cog):
         # INVALID PART
         # Show error message and exit
         if part >= parts:
-            await do_page_too_high(ctx, line)
+            await do_page_too_high(line)
             return
 
         # EVERYTHING CORRECT
@@ -124,7 +124,7 @@ class StoryPaginator(Paginator):
             await self.do_not_a_story(page)
             return False
         elif page[1] > int(page[0]["Parts"]):
-            await self.do_page_too_high(self.ctx, page)
+            await self.do_page_too_high(page)
             return False
         return True
 
